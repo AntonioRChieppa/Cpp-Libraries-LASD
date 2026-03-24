@@ -1,10 +1,10 @@
-# Ignora i test del professore in qualsiasi sottocartella
 **/zlasdtest/
 
-# Ignora file compilati di C++ (buona pratica)
 *.o
 *.out
 *.exe
 
-# Ignora impostazioni locali di VS Code
 .vscode/
+
+MyTest.txt
+test.txt
