@@ -1,0 +1,194 @@
+Gli iteratori sono degli elementi agnostici rispetto al tipo di struttura dati, che permettono lo scorrimento di quest'ultime
+
+Sono costituiti da un interfaccia, definita dalla class Iterator:
+
+- Iterator(&Struttura): costruttore
+- isTerminated(): bool -> funzione booleana che restituisce false finchè non si finisce di scorrere tutta la SD
+- operator *(): &data -> restituisce il valore puntato dall'iteratore
+- operator++(): &Iterator -> restituisce il successore per lo scorrimento
+- reset(): distruttore dell'iteratore
+
+-> Vantaggi: permettono di scorrere qualsiasi tipo di struttura dati
+-> Svantaggi: la loro creazione costa quanto la creazione della struttura dati
+
+
+-! Iteratori sugli alberi binari !-
+
+-- Iteratori in ampiezza -- 
+(Vettori)
+-> Costruttore: index=0
+
+->Operator++(): ++index
+
+(Liste)
+-> Costruttore:
+	
+	if(Tree.root!=null)
+		Queue.Enqueue(Tree.root)
+
+-> Operator++():
+	
+	node = Queue.Dequeue();
+	if(node->sx!=null)
+		Queue.Enqueue(node->sx)
+	if(node->dx!=null)
+		Queue.Enqueue(node->dx)
+
+-------------------------------------------
+
+-- Iteratori in pre-order -- (N - S - D)
+
+-> Costruttore:
+
+	if(Tree.root!=null)
+		Stack.Push(Tree.root)
+
+-> Operator++():
+
+	node = Stack.Pop();
+
+	if(node->dx!=null)
+		Stack.Push(node->dx)
+	if(node->sx!=null)
+		Stack.Push(node->sx)
+
+-------------------------------------------
+
+-- Iteratori in-order -- (S - N - D)
+
+-> Costruttore:
+
+	if(Tree.root!=null)
+		Stack.Push(Tree.root)
+		FindLeftMostNode(Tree.root) //Trova il nodo più a sinistra
+
+-> Operator++():
+
+	node = Stack.Pop();
+
+	if(node->dx!=null)
+		Stack.Push(node->dx)
+		FindLeftMostNode(node->dx)
+
+------------------------------------------
+
+-- Iteratori post-order -- (S - D - N)
+
+-> Costruttore:
+
+	if(Tree.root!=null)
+		Stack.Push(Tree.root)
+		FindLeftMostLeaf(Tree.root) //Trova la foglia più a sinistra
+
+-> Operator++():
+
+	node = Stack.Pop()
+	top = Stack.Top()
+
+	if(node == top->sx && top->dx!=null)
+		Stack.Push(top->dx)
+		FindLeftMostLeaf(top->dx)
+
+----------------------------------------
+----------------------------------------
+
+
+--! Iteratori sui grafi !--
+
+N.B. I grafi possono essere implementati tramite matrici o liste di adiacenza, noi consideriamo il secondo caso
+
+-- Iteratori in Ampiezza --
+
+-> Costruttore:
+	
+	Init(G)
+	index=0
+
+	if(V.Size()!=0)
+		Queue.Enqueue(V[index])
+		Color[index]=black
+
+-> Operator++(): //estraggo la testa dalla coda e aggiungo i suoi addiacenti colorandoli di nero, se lo stack è vuoto, cerco il primo vertice bianco in V e lo aggiungo alla coda
+		   colorandolo di nero
+	
+	node = Queue.Dequeue();
+	for each u in Adj[node] do
+		Queue.Enqueue(u)
+		Color[u] = black
+
+	if(Stack.isEmpty())
+		while(V.Size()!=0 && Color[index]!=white)
+			++index
+
+	if(V.Size()!=0)
+		Queue.Enqueue(V[index])
+		Color[index] = black
+
+------------------------------------------
+
+-- Iteratori in pre-order -- 
+
+-> Costruttore
+
+	Init(G)
+	index=0
+
+	if(V.Size()!=0)
+		Stack.Push(V[index])
+		Color[index] = black
+
+-> Operator++(): //cerco nella lista di adiacenza della testa il primo nodo bianco, lo aggiungo allo stack colorandolo di nero. In caso la testa non avesse adiacenti bianchi, faccio pop 		  della testa e ripeto la ricerca. In caso lo stack fosse vuoto, cerco il primo nodo bianco all'interno di V e lo aggiungo allo stack colorandolo di nero
+
+
+	While(!Stack.isEmpty() && (Adj[Stack.Top()].Size() == 0 || AllAdjAreBlack(Stack.Top()))
+		Stack.Pop()
+
+	if(Stack.isEmpty())
+		while(V.Size()!=0 && Color[index]!=white)
+			++index
+
+		if(V.Size()!=0)
+			Stack.Push(V[index])
+			Color[index] = black
+
+	else
+		i = 0;
+		u = Adj[Stack.Top()][i]
+		
+		while(Color[u]!=white)
+			++i;
+			u = Adj[Stack.Top()][i]
+
+		Stack.Push(u)
+		Color[u] = black
+
+-----------------------------------------
+
+-- Iteratori in post-order --
+
+-> Costruttore:
+	
+	Init(G)
+	index=0
+	
+	if(V.Size()!=0)
+		Stack.Push(V[index])
+		Color[index] = black
+		FindLeftMostLeaf(V[index])
+
+-> Operator++(): //se lo stack non è vuoto, faccio la pop dello stack e richiamo la FindLeftMostLeaf sul nuovo top dello stack, altrimenti se lo stack è vuoto, cerco il primo vertice 			   bianco in V, lo inserisco nello stack colorandolo di nero e richiamo su di lui la FindLeftMostLeaf
+
+	if(Stack.isEmpty())
+		while(V.Size()!=0 && Color[index]!=white)
+			++index
+
+		if(V.Size()!=0)
+			Stack.Push(V[index])
+			Color[index] = black
+			FindLeftMostLeaf(V[index]);
+
+	else
+		Stack.Pop();
+		FindLeftMostLeaf(Stack.Top())
+
+-------------------------------------	
